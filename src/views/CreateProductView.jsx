@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { createProduct } from "../services/productsService";
+import { createProduct } from "../services/productosService";
 import { FaSave, FaArrowLeft } from "react-icons/fa";
 
 const CreateProductView = () => {
