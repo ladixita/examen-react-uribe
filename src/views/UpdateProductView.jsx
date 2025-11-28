@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
-import { getProductById, updateProduct } from "../services/productsService";
+import { getProductById, updateProduct } from "../services/productosService";
 import { FaArrowLeft, FaSave } from "react-icons/fa";
 
 const UpdateProductView = () => {
@@ -18,9 +18,7 @@ const UpdateProductView = () => {
     images: "",
   });
 
-  // ================================
   // Cargar datos existentes del producto
-  // ================================
   const loadProduct = async () => {
     try {
       setLoading(true);
@@ -48,9 +46,7 @@ const UpdateProductView = () => {
     loadProduct();
   }, []);
 
-  // ================================
   // Manejar cambios del formulario
-  // ================================
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -60,9 +56,7 @@ const UpdateProductView = () => {
     }));
   };
 
-  // ================================
   // Guardar cambios
-  // ================================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -105,9 +99,7 @@ const UpdateProductView = () => {
     }
   };
 
-  // ================================
   // Loader de carga
-  // ================================
   if (loading) {
     return (
       <p className="text-center py-10 text-slate-600">Cargando información…</p>
