@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { getProductById } from "../services/productsService";
+import { getProductById } from "../services/productosService";
 import { FaArrowLeft } from "react-icons/fa";
 
 const ProductDetailView = () => {
@@ -11,9 +11,7 @@ const ProductDetailView = () => {
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState(null);
 
-  // ==========================================
   // Cargar información del producto
-  // ==========================================
   const loadProduct = async () => {
     try {
       setLoading(true);
@@ -31,13 +29,12 @@ const ProductDetailView = () => {
     }
   };
 
+  // Cargar el producto al iniciar la vista, una vez
   useEffect(() => {
     loadProduct();
   }, []);
 
-  // ==========================================
   // Loader mientras carga
-  // ==========================================
   if (loading) {
     return (
       <p className="text-center text-slate-600 py-10">
@@ -46,9 +43,7 @@ const ProductDetailView = () => {
     );
   }
 
-  // ==========================================
   // Si no existe producto (ID inválido)
-  // ==========================================
   if (!product) {
     return (
       <p className="text-center text-slate-600 py-10">
