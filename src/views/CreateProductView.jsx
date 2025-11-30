@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+
 import { createProduct } from "../services/productosService";
-import { FaSave, FaArrowLeft } from "react-icons/fa";
+
+// Componentes reutilizables
+import Input from "../components/Input";
+import Loader from "../components/Loader";
+
+import { FaSave, FaArrowLeft, FaImage, FaTag, FaMoneyBill } from "react-icons/fa";
 
 const CreateProductView = () => {
   const navigate = useNavigate();
@@ -16,147 +22,140 @@ const CreateProductView = () => {
 
   const [loading, setLoading] = useState(false);
 
-  // Manejo de cambios del formulario
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Manejar cambios del formulario reusable
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Enviar datos al servicio
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  // Envío del formulario
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    // Validación
+    // Validación básica
     if (!form.title || !form.price || !form.description) {
       Swal.fire({
         icon: "warning",
-        title: "Completa todos los campos obligatorios",
+        title: "Completa los campos obligatorios",
       });
       return;
     }
 
-    const productBody = {
-      title: form.title,
-      price: Number(form.price),
-      description: form.description,
-      images: [form.images || "https://placehold.co/600x400"], // por defecto una imagen
-    };
-
     try {
       setLoading(true);
 
-      await createProduct(productBody);
+      const body = {
+        title: form.title,
+        price: Number(form.price),
+        description: form.description,
+        images: [form.images || "https://placehold.co/600x400"],
+      };
+
+      await createProduct(body);
 
       Swal.fire({
         icon: "success",
         title: "Producto creado correctamente",
-        timer: 2000,
+        timer: 1500,
         showConfirmButton: false,
       });
 
       navigate("/productos");
+
     } catch (err) {
       Swal.fire({
         icon: "error",
-        title: "Error al crear el producto",
-        text: err.message,
+        title: "Error al crear",
+        text: err.message ?? "Ocurrió un error inesperado",
       });
+
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white shadow-md rounded-lg p-6 mt-6">
+    <div className="max-w-2xl mx-auto mt-6 bg-white p-6 rounded-lg shadow-md">
 
-      {/* BOTÓN VOLVER */}
+      {/* VOLVER */}
       <button
         onClick={() => navigate("/productos")}
-        className="flex items-center gap-2 text-sm text-slate-600 mb-4 hover:text-slate-800"
+        className="flex items-center gap-2 text-sm text-slate-600 hover:text-slate-800 mb-4"
       >
         <FaArrowLeft /> Volver
       </button>
 
       <h1 className="text-xl font-bold mb-4 text-slate-800">
-        Crear Nuevo Producto
+        Crear Producto
       </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Si está cargando, mostrar loader */}
+      {loading && <Loader text="Guardando producto..." />}
 
-        {/* TÍTULO */}
-        <div>
-          <label className="block mb-1 text-sm font-semibold text-slate-700">
-            Nombre del producto *
-          </label>
-          <input
-            type="text"
+      {!loading && (
+        <form onSubmit={handleSubmit} className="space-y-5">
+
+          {/* TÍTULO */}
+          <Input
+            label="Nombre del producto"
             name="title"
-            className="w-full border rounded-md px-3 py-2 text-sm"
-            placeholder="Ej: Zapatos deportivos"
+            placeholder="Ej: Audífonos Bluetooth"
             value={form.title}
             onChange={handleChange}
+            required
+            icon={FaTag}
           />
-        </div>
 
-        {/* PRECIO */}
-        <div>
-          <label className="block mb-1 text-sm font-semibold text-slate-700">
-            Precio *
-          </label>
-          <input
+          {/* PRECIO */}
+          <Input
+            label="Precio"
             type="number"
             name="price"
-            className="w-full border rounded-md px-3 py-2 text-sm"
             placeholder="Ej: 120"
             value={form.price}
             onChange={handleChange}
+            required
+            icon={FaMoneyBill}
           />
-        </div>
 
-        {/* DESCRIPCIÓN */}
-        <div>
-          <label className="block mb-1 text-sm font-semibold text-slate-700">
-            Descripción *
-          </label>
-          <textarea
-            name="description"
-            rows="3"
-            className="w-full border rounded-md px-3 py-2 text-sm"
-            placeholder="Descripción del producto"
-            value={form.description}
-            onChange={handleChange}
-          />
-        </div>
+          {/* DESCRIPCIÓN */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-semibold text-slate-700">
+              Descripción *
+            </label>
+            <textarea
+              name="description"
+              rows="3"
+              value={form.description}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded-md text-sm border-slate-300 focus:ring-2 
+                         focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-        {/* IMAGEN */}
-        <div>
-          <label className="block mb-1 text-sm font-semibold text-slate-700">
-            URL de Imagen
-          </label>
-          <input
-            type="text"
+          {/* IMAGEN */}
+          <Input
+            label="URL de imagen"
             name="images"
-            className="w-full border rounded-md px-3 py-2 text-sm"
-            placeholder="https://link-a-imagen.jpg"
+            placeholder="https://..."
             value={form.images}
             onChange={handleChange}
+            icon={FaImage}
           />
-        </div>
 
-        {/* BOTÓN GUARDAR */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 disabled:bg-blue-300"
-        >
-          <FaSave />
-          {loading ? "Guardando..." : "Guardar Producto"}
-        </button>
-      </form>
+          {/* Botón guardar */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 
+                       text-white px-4 py-2 rounded-md text-sm w-full justify-center 
+                       disabled:bg-blue-300"
+          >
+            <FaSave />
+            Guardar Producto
+          </button>
+        </form>
+      )}
     </div>
   );
 };

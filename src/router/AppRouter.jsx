@@ -12,11 +12,7 @@ import ProductDetailView from "../views/ProductDetailView";
 // Componentes globales
 import Navbar from "../components/Navbar";
 
-/*
-   RUTA PRIVADA
-   - Permite acceder SOLO a usuarios logueados
-   - Si no hay sesión, redirige al login
-*/
+/* PRIVATE ROUTE */
 const PrivateRoute = () => {
   const { isAuthenticated } = useAuth();
 
@@ -25,11 +21,10 @@ const PrivateRoute = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* NAVBAR visible solo cuando hay usuario */}
+    <div className="min-h-screen bg-slate-100">
       <Navbar />
 
-      {/* Contenedor principal de páginas privadas */}
+      {/* Contenedor general */}
       <main className="max-w-6xl mx-auto p-4">
         <Outlet />
       </main>
@@ -37,55 +32,48 @@ const PrivateRoute = () => {
   );
 };
 
-/* 
-   RUTA SOLO ADMIN
-   - Solo permite acceso si el usuario tiene role === "admin"
- */
+/* ADMIN ROUTE */
 const AdminRoute = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
-  if (!user) {
+  // No está logueado
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
+  // Está logueado pero NO es admin
   if (user.role !== "admin") {
-    // Si NO es admin no tiene permiso → se va al home
-    return <Navigate to="/" replace />;
+    return <Navigate to="/productos" replace />;
   }
 
-  // Si es admin puede acceder a la vista hija
   return <Outlet />;
 };
 
-/* 
-   ROUTER PRINCIPAL
-   - Separa rutas públicas, privadas y admin
-*/
+/* ROUTER PRINCIPAL */
 const AppRouter = () => {
   return (
     <Routes>
-      {/* RUTA PÚBLICA (SIN LOGIN)   */}
+      {/* RUTA PÚBLICA */}
       <Route path="/login" element={<LoginView />} />
 
-      {/* RUTAS PRIVADAS            */}
-      {/* (requieren estar logueado) */}
+      {/* RUTAS PRIVADAS */}
       <Route element={<PrivateRoute />}>
         
-        {/* HOME accesible por cualquier usuario logueado */}
+        {/* Home para todos los usuarios */}
         <Route path="/" element={<HomeView />} />
         <Route path="/productos" element={<HomeView />} />
-        
-        {/* Ver detalle del producto (lo puede ver user/admin) */}
+
+        {/* Ver detalle (user y admin) */}
         <Route path="/productos/:id" element={<ProductDetailView />} />
 
-        {/* SOLO ADMIN                 */}
+        {/* ADMIN */}
         <Route element={<AdminRoute />}>
           <Route path="/productos/crear" element={<CreateProductView />} />
           <Route path="/productos/editar/:id" element={<UpdateProductView />} />
         </Route>
       </Route>
 
-      {/* RUTA POR DEFECTO          */}
+      {/* RUTA POR DEFECTO */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

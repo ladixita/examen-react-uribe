@@ -1,82 +1,108 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { login as loginService } from "../services/authService";
+import { createContext, useContext, useState } from "react";
+import { login as apiLogin } from "../services/authService";
 
-// 1) Creamos el contexto de autenticación
-const AuthContext = createContext(null);
+// Creamos contexto
+const AuthContext = createContext();
 
-// 2) Hook personalizado para consumir el contexto más fácil
-export const useAuth = () => useContext(AuthContext);
-
-// 3) Componente proveedor que envolverá a toda la app
+/**
+ * AuthProvider:
+ * Contiene toda la lógica de autenticación del proyecto.
+ * 
+ * Provee al árbol de componentes:
+ *   - user
+ *   - login()
+ *   - logout()
+ *   - isAuthenticated
+ *   - loading
+ */
 export const AuthProvider = ({ children }) => {
-  // Estado global del usuario autenticado
-  const [user, setUser] = useState(null);
-  // Estado opcional para saber si estamos cargando la sesión desde localStorage
-  const [loading, setLoading] = useState(true);
+  /**
+   * STATE: user
+   * 
+   * Se inicializa leyendo el localStorage para conservar la sesión
+   * incluso si el usuario recarga la página.
+   */
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
 
-  // 2.3) Al montar el provider, intentamos leer al usuario desde localStorage
-  useEffect(() => {
-    const loadUser = async () => {
-      const storedUser = localStorage.getItem("user");
+  /**
+   * STATE: loading
+   * Controla el estado de "cargando" durante el login.
+   */
+  const [loading, setLoading] = useState(false);
 
-      if (storedUser) {
-        try {
-          const parsed = JSON.parse(storedUser);
-          setUser(parsed);
-        } catch (error) {
-          console.error("Error parseando user desde localStorage:", error);
-          localStorage.removeItem("user");
-        }
-      }
-
-      setLoading(false);
-    };
-
-    loadUser(); // Llamamos la función async
-  }, []);
-
-  // Función de login que usa el servicio authService
+  /**
+   * FUNCIÓN LOGIN
+   *
+   * - Llama al servicio de login
+   * - Guarda el usuario en memoria
+   * - Persiste el usuario en localStorage
+   * - Devuelve el usuario
+   */
   const login = async (email, password) => {
-    // Llamamos al servicio de MockAPI
-    const loggedUser = await loginService(email, password);
+    setLoading(true);
 
-    // Guardamos en estado global
-    setUser(loggedUser);
+    try {
+      const loggedUser = await apiLogin(email, password);
 
-    // Persistimos en localStorage para que no se pierda al refrescar
-    localStorage.setItem("user", JSON.stringify(loggedUser));
+      setUser(loggedUser);
+      localStorage.setItem("user", JSON.stringify(loggedUser));
 
-    // Devolvemos el usuario a quien llame login() (útil para redirigir)
-    return loggedUser;
+      return loggedUser;
+
+    } catch (error) {
+      // Re-lanza el error para que LoginView lo capture y muestre SweetAlert
+      throw error;
+
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Función de logout: limpia estado y storage
+  /**
+   * FUNCIÓN LOGOUT
+   *
+   * - Limpia la información del usuario en memoria
+   * - Borra datos del localStorage
+   */
   const logout = () => {
-    setUser(null);
     localStorage.removeItem("user");
+    setUser(null);
   };
 
-  // Derivamos un booleano
+  /**
+   * isAuthenticated:
+   * Devuelve true si hay usuario logueado.
+   */
   const isAuthenticated = !!user;
 
-  // Valor que compartiremos con toda la app
-  const value = {
-    user, // objeto con id, nombre, email, role
-    isAuthenticated, // true/false
-    loading, // true mientras leemos localStorage
-    login, // función para iniciar sesión
-    logout, // función para cerrar sesión
-  };
-
+  /**
+   * Provider expone toda la información y funciones
+   * al resto de la aplicación mediante el contexto.
+   */
   return (
-    <AuthContext.Provider value={value}>
-      {loading ? (
-        <div className="flex justify-center items-center h-screen text-xl">
-          Cargando...
-        </div>
-      ) : (
-        children
-      )}
+    <AuthContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        loading,
+        isAuthenticated,
+      }}
+    >
+      {children}
     </AuthContext.Provider>
   );
 };
+
+/**
+ * Hook personalizado para usar la autenticación
+ * en cualquier componente: Navbar, LoginView, HomeView, etc.
+ */
+export const useAuth = () => useContext(AuthContext);

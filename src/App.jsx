@@ -1,7 +1,10 @@
 import AppRouter from "./router/AppRouter";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { BrowserRouter } from "react-router-dom";
 
 export default function App() {
-  return <AppRouter />;
+  return (
+    <BrowserRouter>
+      <AppRouter />
+    </BrowserRouter>
+  );
 }
