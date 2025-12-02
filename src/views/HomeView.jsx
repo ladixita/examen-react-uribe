@@ -40,9 +40,9 @@ const HomeView = () => {
   }, []);
 
   // Eliminar producto
-  const handleDelete = async (id, title) => {
+  const handleDelete = async (id, nombre) => {
     const confirm = await Swal.fire({
-      title: `¿Eliminar ${title}?`,
+      title: `¿Eliminar ${nombre}?`,
       text: "Esta acción es irreversible",
       icon: "warning",
       showCancelButton: true,
@@ -100,7 +100,7 @@ const HomeView = () => {
           data={products}
           onView={(row) => navigate(`/productos/${row.id}`)}
           onEdit={(row) => navigate(`/productos/editar/${row.id}`)}
-          onDelete={(row) => handleDelete(row.id, row.title)}
+          onDelete={(row) => handleDelete(row.id, row.nombre)}
         />
       )}
 

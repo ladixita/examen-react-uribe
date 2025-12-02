@@ -43,7 +43,7 @@ const ProductCard = ({ product, onDelete }) => {
         )}
 
         <img
-          src={product.images?.[0] ?? "https://placehold.co/600x400"}
+          src={product.imagen ?? "https://placehold.co/600x400"}
           alt={`Imagen del producto ${product.nombre}`}
           onLoad={() => setImgLoaded(true)}
           className={`
@@ -61,7 +61,7 @@ const ProductCard = ({ product, onDelete }) => {
 
       {/* PRECIO */}
       <p className="text-green-600 font-bold mt-2">
-        S/ {product.price}
+        S/ {product.precio}
       </p>
 
       {/* BOTONES */}

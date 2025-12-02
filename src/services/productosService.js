@@ -36,14 +36,24 @@ const getProductById = async (id) => {
    CREAR PRODUCTO
    POST /products
 */
-const createProduct = async (producto) => {
-  try {
-    const response = await axios.post(PRODUCTS_URL, producto);
-    return response.data;
-  } catch (error) {
-    console.error("Error creando producto:", error);
-    throw error;
-  }
+const createProduct = async(producto) => {
+    try {
+        const response = await axios.post(PRODUCTS_URL, {
+            nombre: producto.nombre,
+            descripcion: producto.descripcion,
+            precio: producto.precio,
+            imagen: producto.imagen || "https://placehold.co/600x400",
+            stock: producto.stock ?? 0,
+            sku: producto.sku ?? "",
+            activo: producto.activo ?? true,
+            categoriaId: producto.categoriaId ?? 1
+        });
+
+        return response.data;
+    } catch (error) {
+        console.log('Error creando producto:', error);
+        throw error;
+    }
 };
 
 /*

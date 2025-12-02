@@ -17,10 +17,10 @@ const UpdateProductView = () => {
   const [previewLoaded, setPreviewLoaded] = useState(false);
 
   const [form, setForm] = useState({
-    title: "",
-    price: "",
-    description: "",
-    images: "",
+    nombre: "",
+    precio: "",
+    descripcion: "",
+    imagen: "",
   });
 
   /** Cargar producto */
@@ -31,12 +31,11 @@ const UpdateProductView = () => {
       const p = await getProductById(id);
 
       setForm({
-        title: p.title,
-        price: p.price,
-        description: p.description,
-        images: p.images?.[0] ?? "",
+        nombre: p.nombre,
+        precio: p.precio,
+        descripcion: p.descripcion,
+        imagen: p.imagen ?? "",
       });
-
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -44,7 +43,6 @@ const UpdateProductView = () => {
         text: err.message ?? "Ocurrió un error inesperado",
       });
       navigate("/productos");
-
     } finally {
       setLoading(false);
     }
@@ -68,7 +66,7 @@ const UpdateProductView = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.title || !form.price || !form.description) {
+    if (!form.nombre || !form.precio || !form.descripcion) {
       Swal.fire({
         icon: "warning",
         title: "Completa los campos obligatorios",
@@ -80,10 +78,10 @@ const UpdateProductView = () => {
       setSaving(true);
 
       const body = {
-        title: form.title,
-        price: Number(form.price),
-        description: form.description,
-        images: [form.images || "https://placehold.co/600x400"],
+        nombre: form.nombre,
+        descripcion: form.descripcion,
+        precio: Number(form.precio),
+        imagen: form.imagen || "https://placehold.co/600x400",
       };
 
       await updateProduct(id, body);
@@ -96,14 +94,12 @@ const UpdateProductView = () => {
       });
 
       navigate("/productos");
-
     } catch (err) {
       Swal.fire({
         icon: "error",
         title: "No se pudo actualizar",
         text: err.message ?? "Ocurrió un error inesperado",
       });
-
     } finally {
       setSaving(false);
     }
@@ -113,7 +109,6 @@ const UpdateProductView = () => {
 
   return (
     <div className="max-w-3xl mx-auto mt-6 bg-white p-6 rounded-lg shadow-md">
-
       {/* Volver */}
       <button
         onClick={() => navigate("/productos")}
@@ -122,16 +117,13 @@ const UpdateProductView = () => {
         <FaArrowLeft /> Volver
       </button>
 
-      <h1 className="text-xl font-bold text-slate-800 mb-2">
-        Editar Producto
-      </h1>
+      <h1 className="text-xl font-bold text-slate-800 mb-2">Editar Producto</h1>
 
       <p className="text-sm text-slate-500 mb-6">
         Modifica los campos necesarios y guarda los cambios.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-
         {/* Imagen previa */}
         <div>
           <label className="text-sm font-semibold text-slate-700">
@@ -144,7 +136,7 @@ const UpdateProductView = () => {
             )}
 
             <img
-              src={form.images || "https://placehold.co/600x400"}
+              src={form.imagen || "https://placehold.co/600x400"}
               onLoad={() => setPreviewLoaded(true)}
               onError={(e) => {
                 e.target.src = "https://placehold.co/600x400";
@@ -163,41 +155,41 @@ const UpdateProductView = () => {
         {/* Nombre */}
         <Input
           label="Nombre"
-          name="title"
+          name="nombre"
           required
           placeholder="Nombre del producto"
-          value={form.title}
+          value={form.nombre}
           onChange={handleChange}
         />
 
         {/* Precio */}
         <Input
           label="Precio"
-          name="price"
+          name="precio"
           type="number"
           required
           placeholder="Ej: 120"
-          value={form.price}
+          value={form.precio}
           onChange={handleChange}
         />
 
         {/* Descripción — AHORA SÍ con Input (textarea) */}
         <Input
           label="Descripción"
-          name="description"
+          name="descripcion"
           type="textarea"
           required
           placeholder="Descripción del producto"
-          value={form.description}
+          value={form.descripcion}
           onChange={handleChange}
         />
 
         {/* URL Imagen */}
         <Input
           label="URL Imagen"
-          name="images"
+          name="imagen"
           placeholder="https://imagen.jpg"
-          value={form.images}
+          value={form.imagen}
           onChange={handleChange}
         />
 
@@ -210,7 +202,6 @@ const UpdateProductView = () => {
           <FaSave />
           {saving ? "Guardando..." : "Guardar Cambios"}
         </button>
-
       </form>
     </div>
   );

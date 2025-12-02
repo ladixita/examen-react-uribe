@@ -1,7 +1,34 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-input:-webkit-autofill {
-  -webkit-text-fill-color: #1e293b !important; /* slate-800 */
-  transition: background-color 5000s ease-in-out 0s;
+/* === Color de texto por defecto SOLO para texto normal === */
+body, p, h1, h2, h3, h4, h5, h6, td, th, label, span, input, textarea {
+  color: #1e293b; /* slate-800 */
+}
+
+/* Inputs SIN texto transparente */
+input, textarea {
+  color: #1e293b;
+}
+
+/* Evitar afectar botones */
+button, .btn {
+  color: white !important;
+}
+
+/* Evitar afectar íconos de react-icons */
+svg {
+  color: inherit;
+}
+
+/* Evitar afectar links del nav */
+nav a {
+  color: #1e293b;
+}
+
+.nav-logo {
+  color: #1d4ed8 !important; /* azul */
+}
+.nav-logo:hover {
+  color: #1e40af !important; /* azul más oscuro */
 }

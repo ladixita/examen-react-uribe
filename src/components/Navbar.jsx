@@ -45,10 +45,10 @@ const Navbar = () => {
         {/* LOGO */}
         <button
           onClick={goHome}
-          className="flex items-center gap-2 text-lg font-bold text-blue-600"
+          className="flex items-center gap-2 font-bold text-xl nav-logo"
         >
-          <FaBoxOpen className="text-blue-600" />
-          Inventario App
+          <FaBoxOpen className="nav-logo" />
+          <span className="nav-logo">Inventario App</span>
         </button>
 
         {/* BOTÓN HAMBURGUESA */}

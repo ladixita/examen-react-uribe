@@ -8,16 +8,22 @@ import { createProduct } from "../services/productosService";
 import Input from "../components/Input";
 import Loader from "../components/Loader";
 
-import { FaSave, FaArrowLeft, FaImage, FaTag, FaMoneyBill } from "react-icons/fa";
+import {
+  FaSave,
+  FaArrowLeft,
+  FaImage,
+  FaTag,
+  FaMoneyBill,
+} from "react-icons/fa";
 
 const CreateProductView = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    title: "",
-    price: "",
-    description: "",
-    images: "",
+    nombre: "",
+    descripcion: "",
+    precio: "",
+    imagen: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -33,7 +39,7 @@ const CreateProductView = () => {
     e.preventDefault();
 
     // Validación básica
-    if (!form.title || !form.price || !form.description) {
+    if (!form.nombre || !form.precio || !form.descripcion) {
       Swal.fire({
         icon: "warning",
         title: "Completa los campos obligatorios",
@@ -45,10 +51,10 @@ const CreateProductView = () => {
       setLoading(true);
 
       const body = {
-        title: form.title,
-        price: Number(form.price),
-        description: form.description,
-        images: [form.images || "https://placehold.co/600x400"],
+        nombre: form.nombre,
+        descripcion: form.descripcion,
+        precio: Number(form.precio),
+        imagen: form.imagen || "https://placehold.co/600x400",
       };
 
       await createProduct(body);
@@ -61,14 +67,12 @@ const CreateProductView = () => {
       });
 
       navigate("/productos");
-
     } catch (err) {
       Swal.fire({
         icon: "error",
         title: "Error al crear",
         text: err.message ?? "Ocurrió un error inesperado",
       });
-
     } finally {
       setLoading(false);
     }
@@ -76,7 +80,6 @@ const CreateProductView = () => {
 
   return (
     <div className="max-w-2xl mx-auto mt-6 bg-white p-6 rounded-lg shadow-md">
-
       {/* VOLVER */}
       <button
         onClick={() => navigate("/productos")}
@@ -85,22 +88,19 @@ const CreateProductView = () => {
         <FaArrowLeft /> Volver
       </button>
 
-      <h1 className="text-xl font-bold mb-4 text-slate-800">
-        Crear Producto
-      </h1>
+      <h1 className="text-xl font-bold mb-4 text-slate-800">Crear Producto</h1>
 
       {/* Si está cargando, mostrar loader */}
       {loading && <Loader text="Guardando producto..." />}
 
       {!loading && (
         <form onSubmit={handleSubmit} className="space-y-5">
-
           {/* TÍTULO */}
           <Input
             label="Nombre del producto"
-            name="title"
+            name="nombre"
             placeholder="Ej: Audífonos Bluetooth"
-            value={form.title}
+            value={form.nombre}
             onChange={handleChange}
             required
             icon={FaTag}
@@ -110,9 +110,9 @@ const CreateProductView = () => {
           <Input
             label="Precio"
             type="number"
-            name="price"
+            name="precio"
             placeholder="Ej: 120"
-            value={form.price}
+            value={form.precio}
             onChange={handleChange}
             required
             icon={FaMoneyBill}
@@ -124,9 +124,9 @@ const CreateProductView = () => {
               Descripción *
             </label>
             <textarea
-              name="description"
+              name="descripcion"
               rows="3"
-              value={form.description}
+              value={form.descripcion}
               onChange={handleChange}
               className="w-full border px-3 py-2 rounded-md text-sm border-slate-300 focus:ring-2 
                          focus:ring-blue-500 focus:border-blue-500"
@@ -136,9 +136,9 @@ const CreateProductView = () => {
           {/* IMAGEN */}
           <Input
             label="URL de imagen"
-            name="images"
+            name="imagen"
             placeholder="https://..."
-            value={form.images}
+            value={form.imagen}
             onChange={handleChange}
             icon={FaImage}
           />

@@ -55,7 +55,7 @@ const ProductDetailView = () => {
 
       {/* TÍTULO */}
       <h1 className="text-2xl font-bold text-slate-800 mb-4">
-        {product.title}
+        {product.nombre}
       </h1>
 
       {/* GRID PRINCIPAL */}
@@ -68,8 +68,8 @@ const ProductDetailView = () => {
           )}
 
           <img
-            src={product.images?.[0] ?? "https://placehold.co/600x400"}
-            alt={product.title}
+            src={product.imagen ?? "https://placehold.co/600x400"}
+            alt={product.nombre}
             onLoad={() => setImgLoaded(true)}
             onError={(e) => {
               e.target.src = "https://placehold.co/600x400";
@@ -89,14 +89,14 @@ const ProductDetailView = () => {
           <div>
             <h3 className="text-sm font-semibold text-slate-700">Precio:</h3>
             <p className="text-lg font-bold text-green-600">
-              S/ {product.price}
+              S/ {product.precio}
             </p>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold text-slate-700">Descripción:</h3>
             <p className="text-slate-600 leading-relaxed">
-              {product.description}
+              {product.descripcion}
             </p>
           </div>
 
